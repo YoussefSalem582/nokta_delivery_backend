@@ -43,7 +43,8 @@ npm run start:dev
 ```
 
 API: `http://localhost:3000/api`  
-Swagger: `http://localhost:3000/api/docs`
+Swagger: `http://localhost:3000/api/docs`  
+**Full API docs:** [`docs/API.md`](docs/API.md) · [OpenAPI JSON](docs/openapi/nokta-api.openapi.json) · [Postman collection](docs/postman/nokta-api.postman_collection.json)
 
 ## Environment Variables
 
@@ -110,6 +111,7 @@ Update the Flutter `ApiEndpoints.baseUrl` to point to your backend (e.g. `http:/
 | `npm run prisma:migrate` | Apply database migrations |
 | `npm run prisma:seed` | Seed demo admin and rider accounts |
 | `npm run prisma:studio` | Open Prisma Studio |
+| `npm run docs:openapi` | Regenerate OpenAPI JSON export |
 
 ## Docker Deployment
 
