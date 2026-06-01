@@ -17,6 +17,7 @@ import { LocationModule } from './modules/location/location.module';
 import { NotificationsModule } from './modules/notifications/notifications.module';
 import { SyncModule } from './modules/sync/sync.module';
 import { AdminModule } from './modules/admin/admin.module';
+import { JobsModule } from './jobs/jobs.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { AdminModule } from './modules/admin/admin.module';
     }),
     DatabaseModule,
     RedisModule,
+    JobsModule,
     HealthModule,
     AuthModule,
     ProfileModule,

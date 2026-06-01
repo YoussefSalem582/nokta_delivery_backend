@@ -1,8 +1,15 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, Optional } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NotificationStatus } from '@prisma/client';
+import { InjectQueue } from '@nestjs/bullmq';
+import { Queue } from 'bullmq';
 import * as admin from 'firebase-admin';
 import { PrismaService } from '../../database/prisma.service';
+import {
+  NOTIFICATIONS_QUEUE,
+  RETRY_FAILED_NOTIFICATIONS_JOB,
+  SEND_NOTIFICATION_JOB,
+} from '../../jobs/queues.constants';
 
 @Injectable()
 export class NotificationsService {
@@ -12,6 +19,7 @@ export class NotificationsService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly configService: ConfigService,
+    @Optional() @InjectQueue(NOTIFICATIONS_QUEUE) private readonly notificationQueue?: Queue,
   ) {
     this.initFirebase();
   }
@@ -24,7 +32,11 @@ export class NotificationsService {
     if (projectId && clientEmail && privateKey) {
       if (!admin.apps.length) {
         admin.initializeApp({
-          credential: admin.credential.cert({ projectId, clientEmail, privateKey }),
+          credential: admin.credential.cert({
+            projectId,
+            clientEmail,
+            privateKey,
+          }),
         });
       }
       this.firebaseInitialized = true;
@@ -47,8 +59,26 @@ export class NotificationsService {
       },
     });
 
-    await this.sendNotification(notification.id);
+    await this.enqueueSend(notification.id);
     return notification;
+  }
+
+  async enqueueSend(notificationId: string) {
+    if (this.notificationQueue) {
+      await this.notificationQueue.add(
+        SEND_NOTIFICATION_JOB,
+        { notificationId },
+        {
+          attempts: 5,
+          backoff: { type: 'exponential', delay: 2000 },
+          removeOnComplete: 100,
+          removeOnFail: 200,
+        },
+      );
+      return;
+    }
+
+    await this.sendNotification(notificationId);
   }
 
   async sendNotification(notificationId: string) {
@@ -61,17 +91,17 @@ export class NotificationsService {
       where: { userId: notification.userId },
     });
 
-    if (!tokens.length || !this.firebaseInitialized) {
+    if (!tokens.length) {
       await this.prisma.notification.update({
         where: { id: notificationId },
-        data: {
-          status: this.firebaseInitialized ? NotificationStatus.SENT : NotificationStatus.PENDING,
-          sentAt: this.firebaseInitialized ? null : undefined,
-        },
+        data: { status: NotificationStatus.PENDING },
       });
-      if (!this.firebaseInitialized) {
-        this.logger.debug(`Firebase not configured; notification ${notificationId} queued only`);
-      }
+      this.logger.debug(`No device tokens for user ${notification.userId}`);
+      return;
+    }
+
+    if (!this.firebaseInitialized) {
+      this.logger.debug(`Firebase not configured; notification ${notificationId} stays pending`);
       return;
     }
 
@@ -92,7 +122,7 @@ export class NotificationsService {
 
       await this.prisma.notification.update({
         where: { id: notificationId },
-        data: { status: NotificationStatus.SENT, sentAt: new Date() },
+        data: { status: NotificationStatus.SENT, sentAt: new Date(), errorMessage: null },
       });
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Unknown error';
@@ -101,6 +131,7 @@ export class NotificationsService {
         data: { status: NotificationStatus.FAILED, errorMessage: message },
       });
       this.logger.error(`Failed to send notification ${notificationId}: ${message}`);
+      throw error;
     }
   }
 
@@ -110,8 +141,27 @@ export class NotificationsService {
       take: limit,
     });
 
-    for (const n of failed) {
-      await this.sendNotification(n.id);
+    for (const notification of failed) {
+      await this.prisma.notification.update({
+        where: { id: notification.id },
+        data: { status: NotificationStatus.PENDING, errorMessage: null },
+      });
+      await this.enqueueSend(notification.id);
     }
+
+    return { retried: failed.length };
+  }
+
+  async scheduleRetryFailedJob() {
+    if (!this.notificationQueue) return;
+
+    await this.notificationQueue.add(
+      RETRY_FAILED_NOTIFICATIONS_JOB,
+      {},
+      {
+        repeat: { every: 5 * 60 * 1000 },
+        jobId: 'retry-failed-notifications',
+      },
+    );
   }
 }
