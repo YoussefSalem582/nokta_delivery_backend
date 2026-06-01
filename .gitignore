@@ -1,0 +1,38 @@
+# Dependencies
+node_modules/
+dist/
+coverage/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# Prisma
+prisma/*.db
+prisma/*.db-journal
+
+# Firebase
+firebase-service-account.json
+*-firebase-adminsdk-*.json
+
+# Test
+.nyc_output/
+
+# Build
+*.tsbuildinfo
