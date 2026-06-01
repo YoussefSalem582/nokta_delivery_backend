@@ -35,7 +35,10 @@ docker compose up -d postgres redis
 # 4. Run migrations
 npm run prisma:migrate
 
-# 5. Start dev server
+# 5. Seed demo accounts (optional)
+npm run prisma:seed
+
+# 6. Start dev server
 npm run start:dev
 ```
 
@@ -103,7 +106,9 @@ Update the Flutter `ApiEndpoints.baseUrl` to point to your backend (e.g. `http:/
 | `npm run start:dev` | Development with hot reload |
 | `npm run build` | Production build |
 | `npm test` | Run unit tests |
+| `npm run test:e2e` | Run e2e API tests |
 | `npm run prisma:migrate` | Apply database migrations |
+| `npm run prisma:seed` | Seed demo admin and rider accounts |
 | `npm run prisma:studio` | Open Prisma Studio |
 
 ## Docker Deployment
