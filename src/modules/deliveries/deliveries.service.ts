@@ -9,6 +9,7 @@ import { PrismaService } from '../../database/prisma.service';
 import { MessageKeys } from '../../common/messages/message-keys';
 import { buildErrorResponse } from '../../common/responses/api-response';
 import { toDeliveryStatus } from '../../common/mappers/status.mapper';
+import { NotificationKeys } from '../../common/messages/notification-keys';
 import {
   AssignCourierDto,
   CreateDeliveryDto,
@@ -87,8 +88,8 @@ export class DeliveriesService {
 
     await this.notificationsService.queueNotification(
       dto.courierId,
-      'notification.delivery.assigned.title',
-      'notification.delivery.assigned.body',
+      NotificationKeys.DELIVERY.ASSIGNED.title,
+      NotificationKeys.DELIVERY.ASSIGNED.body,
       { deliveryId: id },
     );
 
@@ -117,8 +118,8 @@ export class DeliveriesService {
     if (next === DeliveryStatus.DELIVERED) {
       await this.notificationsService.queueNotification(
         delivery.customerId,
-        'notification.delivery.completed.title',
-        'notification.delivery.completed.body',
+        NotificationKeys.DELIVERY.COMPLETED.title,
+        NotificationKeys.DELIVERY.COMPLETED.body,
         { deliveryId: id },
       );
     }

@@ -18,6 +18,9 @@ import { UpdateLocationDto, UpdateRideStatusDto } from '../rides/dto/ride.dto';
 import { LocationService } from '../location/location.service';
 import { LocationGateway } from '../../realtime/location.gateway';
 import { NotificationsService } from '../notifications/notifications.service';
+import {
+  getRideStatusNotification,
+} from '../../common/messages/notification-keys';
 import { IsBoolean, IsNotEmpty, IsString } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
@@ -197,12 +200,7 @@ export class DriversService {
       data: { availability: DriverAvailability.ON_TRIP },
     });
 
-    await this.notificationsService.queueNotification(
-      ride.riderId,
-      'notification.ride.accepted.title',
-      'notification.ride.accepted.body',
-      { rideId: tripId },
-    );
+    await this.notifyRideStatus(updated.riderId, tripId, RideStatus.ACCEPTED);
 
     return toTripJson(updated);
   }
@@ -237,6 +235,8 @@ export class DriversService {
         data: { availability: DriverAvailability.ONLINE },
       });
     }
+
+    await this.notifyRideStatus(ride.riderId, tripId, nextStatus);
 
     return toTripJson(updated);
   }
@@ -285,6 +285,16 @@ export class DriversService {
     );
 
     return results;
+  }
+
+  private async notifyRideStatus(riderId: string, rideId: string, status: RideStatus) {
+    const config = getRideStatusNotification(status);
+    if (!config) return;
+
+    await this.notificationsService.queueNotification(riderId, config.title, config.body, {
+      rideId,
+      status,
+    });
   }
 
   private toProfileResponse(
