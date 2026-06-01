@@ -20,7 +20,8 @@
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
     "prisma:studio": "prisma studio",
-    "prisma:seed": "ts-node prisma/seed.ts"
+    "prisma:seed": "ts-node prisma/seed.ts",
+    "docs:openapi": "ts-node scripts/export-openapi.ts"
   },
   "dependencies": {
     "@nestjs/bullmq": "^11.0.2",

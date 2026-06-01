@@ -1,0 +1,1507 @@
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/api/health": {
+      "get": {
+        "operationId": "HealthController_check",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Health check",
+        "tags": [
+          "health"
+        ]
+      }
+    },
+    "/api/health/ready": {
+      "get": {
+        "operationId": "HealthController_ready",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Readiness check including database",
+        "tags": [
+          "health"
+        ]
+      }
+    },
+    "/api/v1/auth/register": {
+      "post": {
+        "operationId": "AuthController_register",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "summary": "Register a new user",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/v1/auth/login": {
+      "post": {
+        "operationId": "AuthController_login",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "summary": "Login with email and password",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/v1/auth/refresh": {
+      "post": {
+        "operationId": "AuthController_refresh",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RefreshTokenDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "summary": "Refresh access token",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/v1/auth/logout": {
+      "post": {
+        "operationId": "AuthController_logout",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Logout and revoke refresh tokens",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/v1/auth/forgot-password": {
+      "post": {
+        "operationId": "AuthController_forgotPassword",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ForgotPasswordDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "summary": "Request password reset",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/v1/auth/reset-password": {
+      "post": {
+        "operationId": "AuthController_resetPassword",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResetPasswordDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "summary": "Reset password with token",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/v1/auth/device-token": {
+      "post": {
+        "operationId": "AuthController_registerDeviceToken",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterDeviceTokenDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Register FCM device token",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/profile": {
+      "get": {
+        "operationId": "ProfileController_getProfile",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get current user profile (Flutter-compatible)",
+        "tags": [
+          "profile"
+        ]
+      }
+    },
+    "/api/riders": {
+      "get": {
+        "operationId": "ProfileController_listRiders",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "List riders (admin/demo)",
+        "tags": [
+          "profile"
+        ]
+      }
+    },
+    "/api/trips": {
+      "get": {
+        "operationId": "RidesController_listTrips",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "List trips for current user",
+        "tags": [
+          "trips"
+        ]
+      }
+    },
+    "/api/trips/active": {
+      "get": {
+        "operationId": "RidesController_activeTrip",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get active trip for current user",
+        "tags": [
+          "trips"
+        ]
+      }
+    },
+    "/api/trips/{id}": {
+      "get": {
+        "operationId": "RidesController_getTrip",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get trip by ID",
+        "tags": [
+          "trips"
+        ]
+      }
+    },
+    "/api/trips/request": {
+      "post": {
+        "operationId": "RidesController_requestTrip",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RequestRideDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Request a new trip",
+        "tags": [
+          "trips"
+        ]
+      }
+    },
+    "/api/trips/{id}/status": {
+      "patch": {
+        "operationId": "RidesController_updateStatus",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateRideStatusDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Update trip status",
+        "tags": [
+          "trips"
+        ]
+      }
+    },
+    "/api/rides/estimate-fare": {
+      "post": {
+        "operationId": "RidesController_estimateFare",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EstimateFareDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Estimate ride fare",
+        "tags": [
+          "trips"
+        ]
+      }
+    },
+    "/api/drivers": {
+      "get": {
+        "operationId": "DriversController_listDrivers",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "List available drivers",
+        "tags": [
+          "drivers"
+        ]
+      }
+    },
+    "/api/v1/driver/register": {
+      "post": {
+        "operationId": "DriversController_register",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DriverRegisterDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Register as driver",
+        "tags": [
+          "drivers"
+        ]
+      }
+    },
+    "/api/v1/driver/profile": {
+      "get": {
+        "operationId": "DriversController_profile",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get driver profile",
+        "tags": [
+          "drivers"
+        ]
+      }
+    },
+    "/api/v1/driver/availability": {
+      "patch": {
+        "operationId": "DriversController_availability",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateAvailabilityDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Update driver availability",
+        "tags": [
+          "drivers"
+        ]
+      }
+    },
+    "/api/v1/driver/offers": {
+      "get": {
+        "operationId": "DriversController_offers",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get pending ride offers",
+        "tags": [
+          "drivers"
+        ]
+      }
+    },
+    "/api/v1/driver/offers/{tripId}/accept": {
+      "post": {
+        "operationId": "DriversController_acceptOffer",
+        "parameters": [
+          {
+            "name": "tripId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Accept a ride offer",
+        "tags": [
+          "drivers"
+        ]
+      }
+    },
+    "/api/v1/driver/offers/{tripId}/decline": {
+      "post": {
+        "operationId": "DriversController_declineOffer",
+        "parameters": [
+          {
+            "name": "tripId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Decline a ride offer",
+        "tags": [
+          "drivers"
+        ]
+      }
+    },
+    "/api/v1/driver/trips/{tripId}/status": {
+      "patch": {
+        "operationId": "DriversController_updateTripStatus",
+        "parameters": [
+          {
+            "name": "tripId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateRideStatusDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Update trip status as driver",
+        "tags": [
+          "drivers"
+        ]
+      }
+    },
+    "/api/v1/driver/trips/{tripId}/location": {
+      "patch": {
+        "operationId": "DriversController_updateTripLocation",
+        "parameters": [
+          {
+            "name": "tripId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateLocationDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Update driver location during trip",
+        "tags": [
+          "drivers"
+        ]
+      }
+    },
+    "/api/deliveries": {
+      "post": {
+        "operationId": "DeliveriesController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateDeliveryDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Create delivery request",
+        "tags": [
+          "deliveries"
+        ]
+      },
+      "get": {
+        "operationId": "DeliveriesController_list",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "List deliveries for current user",
+        "tags": [
+          "deliveries"
+        ]
+      }
+    },
+    "/api/deliveries/{id}/tracking": {
+      "get": {
+        "operationId": "DeliveriesController_tracking",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Track delivery with live and historical locations",
+        "tags": [
+          "deliveries"
+        ]
+      }
+    },
+    "/api/deliveries/{id}/location": {
+      "patch": {
+        "operationId": "DeliveriesController_updateLocation",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateLocationDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Update courier location during delivery",
+        "tags": [
+          "deliveries"
+        ]
+      }
+    },
+    "/api/deliveries/{id}": {
+      "get": {
+        "operationId": "DeliveriesController_get",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get delivery by ID",
+        "tags": [
+          "deliveries"
+        ]
+      }
+    },
+    "/api/deliveries/{id}/assign": {
+      "patch": {
+        "operationId": "DeliveriesController_assign",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssignCourierDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Assign courier to delivery",
+        "tags": [
+          "deliveries"
+        ]
+      }
+    },
+    "/api/deliveries/{id}/status": {
+      "patch": {
+        "operationId": "DeliveriesController_updateStatus",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateDeliveryStatusDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Update delivery status",
+        "tags": [
+          "deliveries"
+        ]
+      }
+    },
+    "/api/orders": {
+      "get": {
+        "operationId": "OrdersController_listOrders",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "List orders (Flutter-compatible alias for deliveries)",
+        "tags": [
+          "orders"
+        ]
+      }
+    },
+    "/api/v1/sync/actions": {
+      "post": {
+        "operationId": "SyncController_syncActions",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SyncBatchDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Process queued offline actions",
+        "tags": [
+          "sync"
+        ]
+      }
+    },
+    "/api/v1/sync/reconcile": {
+      "get": {
+        "operationId": "SyncController_reconcile",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Reconcile client state after reconnect",
+        "tags": [
+          "sync"
+        ]
+      }
+    },
+    "/api/v1/admin/users": {
+      "get": {
+        "operationId": "AdminController_listUsers",
+        "parameters": [
+          {
+            "name": "role",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "List users",
+        "tags": [
+          "admin"
+        ]
+      }
+    },
+    "/api/v1/admin/users/{id}/deactivate": {
+      "patch": {
+        "operationId": "AdminController_deactivateUser",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Deactivate user",
+        "tags": [
+          "admin"
+        ]
+      }
+    },
+    "/api/v1/admin/rides": {
+      "get": {
+        "operationId": "AdminController_listRides",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "List all rides",
+        "tags": [
+          "admin"
+        ]
+      }
+    },
+    "/api/v1/admin/deliveries": {
+      "get": {
+        "operationId": "AdminController_listDeliveries",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "List all deliveries",
+        "tags": [
+          "admin"
+        ]
+      }
+    },
+    "/api/v1/admin/audit-logs": {
+      "get": {
+        "operationId": "AdminController_auditLogs",
+        "parameters": [
+          {
+            "name": "entityType",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "List recent audit logs for moderation",
+        "tags": [
+          "admin"
+        ]
+      }
+    },
+    "/api/v1/admin/analytics/overview": {
+      "get": {
+        "operationId": "AdminController_analytics",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Platform analytics overview",
+        "tags": [
+          "admin"
+        ]
+      }
+    }
+  },
+  "info": {
+    "title": "Nokta API",
+    "description": "Ride-hailing and delivery platform API for Egypt. Supports riders, drivers, couriers, and admins.",
+    "version": "1.0.0",
+    "contact": {}
+  },
+  "tags": [],
+  "servers": [
+    {
+      "url": "http://localhost:3000",
+      "description": "Local development"
+    },
+    {
+      "url": "https://api.nokta.app",
+      "description": "Production"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "access-token": {
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "type": "http",
+        "in": "header"
+      }
+    },
+    "schemas": {
+      "RegisterDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Ahmed Hassan"
+          },
+          "email": {
+            "type": "string",
+            "example": "ahmed@example.com"
+          },
+          "phone": {
+            "type": "string",
+            "example": "+201012345678"
+          },
+          "password": {
+            "type": "string",
+            "example": "SecurePass123!"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "RIDER",
+              "DRIVER",
+              "COURIER",
+              "ADMIN"
+            ],
+            "default": "RIDER"
+          }
+        },
+        "required": [
+          "name",
+          "email",
+          "phone",
+          "password"
+        ]
+      },
+      "LoginDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "example": "ahmed@example.com"
+          },
+          "password": {
+            "type": "string",
+            "example": "SecurePass123!"
+          }
+        },
+        "required": [
+          "email",
+          "password"
+        ]
+      },
+      "RefreshTokenDto": {
+        "type": "object",
+        "properties": {
+          "refreshToken": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "refreshToken"
+        ]
+      },
+      "ForgotPasswordDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "example": "ahmed@example.com"
+          }
+        },
+        "required": [
+          "email"
+        ]
+      },
+      "ResetPasswordDto": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string"
+          },
+          "newPassword": {
+            "type": "string",
+            "example": "NewSecurePass123!"
+          }
+        },
+        "required": [
+          "token",
+          "newPassword"
+        ]
+      },
+      "RegisterDeviceTokenDto": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string"
+          },
+          "platform": {
+            "type": "string",
+            "example": "android"
+          }
+        },
+        "required": [
+          "token",
+          "platform"
+        ]
+      },
+      "RequestRideDto": {
+        "type": "object",
+        "properties": {
+          "riderId": {
+            "type": "string"
+          },
+          "pickupAddress": {
+            "type": "string"
+          },
+          "dropoffAddress": {
+            "type": "string"
+          },
+          "pickupLat": {
+            "type": "number"
+          },
+          "pickupLng": {
+            "type": "number"
+          },
+          "dropoffLat": {
+            "type": "number"
+          },
+          "dropoffLng": {
+            "type": "number"
+          },
+          "fare": {
+            "type": "number"
+          },
+          "distanceKm": {
+            "type": "number"
+          },
+          "etaMinutes": {
+            "type": "number"
+          },
+          "paymentMethodKey": {
+            "type": "string"
+          },
+          "rideTierKey": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string",
+            "description": "Idempotency key for offline sync"
+          }
+        },
+        "required": [
+          "pickupAddress",
+          "dropoffAddress",
+          "pickupLat",
+          "pickupLng",
+          "dropoffLat",
+          "dropoffLng"
+        ]
+      },
+      "UpdateRideStatusDto": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "example": "inProgress"
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "EstimateFareDto": {
+        "type": "object",
+        "properties": {
+          "pickupLat": {
+            "type": "number"
+          },
+          "pickupLng": {
+            "type": "number"
+          },
+          "dropoffLat": {
+            "type": "number"
+          },
+          "dropoffLng": {
+            "type": "number"
+          },
+          "rideTierKey": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "pickupLat",
+          "pickupLng",
+          "dropoffLat",
+          "dropoffLng"
+        ]
+      },
+      "DriverRegisterDto": {
+        "type": "object",
+        "properties": {
+          "phone": {
+            "type": "string"
+          },
+          "vehicleType": {
+            "type": "string"
+          },
+          "vehicleMakeModel": {
+            "type": "string"
+          },
+          "licensePlate": {
+            "type": "string"
+          },
+          "termsAccepted": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "phone",
+          "vehicleType",
+          "vehicleMakeModel",
+          "licensePlate"
+        ]
+      },
+      "UpdateAvailabilityDto": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "example": "online"
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "UpdateLocationDto": {
+        "type": "object",
+        "properties": {
+          "lat": {
+            "type": "number"
+          },
+          "lng": {
+            "type": "number"
+          },
+          "heading": {
+            "type": "number"
+          },
+          "speed": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "lat",
+          "lng"
+        ]
+      },
+      "CreateDeliveryDto": {
+        "type": "object",
+        "properties": {
+          "pickupAddress": {
+            "type": "string"
+          },
+          "dropoffAddress": {
+            "type": "string"
+          },
+          "pickupLat": {
+            "type": "number"
+          },
+          "pickupLng": {
+            "type": "number"
+          },
+          "dropoffLat": {
+            "type": "number"
+          },
+          "dropoffLng": {
+            "type": "number"
+          },
+          "fee": {
+            "type": "number"
+          },
+          "packageNotes": {
+            "type": "string"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "pickupAddress",
+          "dropoffAddress",
+          "pickupLat",
+          "pickupLng",
+          "dropoffLat",
+          "dropoffLng"
+        ]
+      },
+      "AssignCourierDto": {
+        "type": "object",
+        "properties": {
+          "courierId": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "courierId"
+        ]
+      },
+      "UpdateDeliveryStatusDto": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "example": "pickedUp"
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "SyncActionDto": {
+        "type": "object",
+        "properties": {
+          "clientActionId": {
+            "type": "string"
+          },
+          "actionType": {
+            "type": "string",
+            "example": "ride.request"
+          },
+          "payload": {
+            "type": "object"
+          }
+        },
+        "required": [
+          "clientActionId",
+          "actionType",
+          "payload"
+        ]
+      },
+      "SyncBatchDto": {
+        "type": "object",
+        "properties": {
+          "actions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SyncActionDto"
+            }
+          }
+        },
+        "required": [
+          "actions"
+        ]
+      }
+    }
+  }
+}
