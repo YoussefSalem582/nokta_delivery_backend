@@ -1,0 +1,9 @@
+---
+description: "HTTP endpoints and DTOs"
+globs: "src/modules/**/*.controller.ts,src/modules/**/dto/**"
+alwaysApply: false
+---
+
+# API Endpoints
+
+DTO → service → controller. Use `status.mapper.ts` for Flutter trip JSON. Run `npm run docs:openapi` after contract changes.

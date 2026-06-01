@@ -2,6 +2,8 @@
 
 Production-ready API for **Nokta**, an Egypt-focused ride-hailing and delivery platform. Built with NestJS, PostgreSQL, Redis, Socket.io, and Firebase Cloud Messaging.
 
+**Version:** `0.1.0` · **Agent docs:** [`AGENTS.md`](AGENTS.md) · **Tech index:** [`tech_readme_files/INDEX.md`](tech_readme_files/INDEX.md)
+
 ## Features
 
 - JWT authentication with refresh tokens, roles (rider, driver, courier, admin)

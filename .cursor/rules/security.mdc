@@ -1,0 +1,9 @@
+---
+description: "Auth and secrets"
+globs: "src/modules/auth/**,src/common/guards/**,src/config/**"
+alwaysApply: false
+---
+
+# Security
+
+No secrets in source. Use guards + `@Roles()`. bcrypt for passwords.

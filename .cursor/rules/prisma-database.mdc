@@ -1,0 +1,9 @@
+---
+description: "Prisma and Redis"
+globs: "prisma/**,src/database/**"
+alwaysApply: false
+---
+
+# Database
+
+Prisma via `PrismaService` in services only. Map API status strings in `status.mapper.ts`.

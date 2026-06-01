@@ -1,0 +1,12 @@
+---
+description: "NestJS module layout"
+globs: "src/modules/**"
+alwaysApply: false
+---
+
+# NestJS Module Patterns
+
+- Controllers: routes, guards, Swagger only
+- Services: business logic + Prisma
+- Register modules in `app.module.ts`
+- Co-locate `*.spec.ts` with services

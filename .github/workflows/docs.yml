@@ -1,0 +1,51 @@
+name: docs
+
+on:
+  pull_request:
+    paths:
+      - '**/*.md'
+      - '.*ignore'
+      - 'scripts/docs/**'
+      - 'scripts/sync_ai_ignores.*'
+      - 'scripts/check_docs_freshness.*'
+      - 'scripts/README.md'
+      - '.markdownlint-cli2.jsonc'
+      - '.github/workflows/docs.yml'
+      - '.agents/skills/**'
+      - 'package.json'
+  push:
+    branches:
+      - main
+    paths:
+      - '**/*.md'
+      - '.*ignore'
+      - 'scripts/docs/**'
+      - 'scripts/sync_ai_ignores.*'
+      - 'scripts/check_docs_freshness.*'
+      - 'scripts/README.md'
+      - '.markdownlint-cli2.jsonc'
+      - '.github/workflows/docs.yml'
+      - '.agents/skills/**'
+      - 'package.json'
+
+jobs:
+  markdownlint:
+    name: markdownlint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Run markdownlint-cli2
+        run: npx -y markdownlint-cli2 "**/*.md"
+
+  freshness:
+    name: docs freshness (version + ignores)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify package.json version in README / CURRENT_STATUS
+        run: bash scripts/docs/check_docs_freshness.sh
+      - name: Verify AI ignore files match template
+        run: bash scripts/docs/sync_ai_ignores.sh --check

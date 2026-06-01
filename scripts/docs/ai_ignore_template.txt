@@ -1,0 +1,37 @@
+# ============================================================
+# ai_ignore_template.txt — Canonical exclusion list for all AI-agent ignore files.
+#
+# Edit this file, then run:
+#   .\scripts\sync_ai_ignores.ps1
+# ============================================================
+
+# Node / Nest build artifacts
+node_modules/
+dist/
+coverage/
+.nyc_output/
+
+# Prisma generated (large)
+node_modules/.prisma/
+
+# IDE & OS
+.idea/
+.vscode/
+*.iml
+.DS_Store
+Thumbs.db
+
+# Secrets
+.env
+.env.*
+!.env.example
+
+# Logs
+**/*.log
+
+# Lock files (large, low signal)
+package-lock.json
+
+# Docker volumes / local data (if present)
+postgres_data/
+redis_data/
