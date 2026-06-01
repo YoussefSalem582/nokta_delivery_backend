@@ -1,10 +1,4 @@
-import {
-  IsNumber,
-  IsOptional,
-  IsString,
-  IsNotEmpty,
-  Min,
-} from 'class-validator';
+import { IsNumber, IsOptional, IsString, IsNotEmpty, Min } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class RequestRideDto {

@@ -1,4 +1,9 @@
-import { Injectable, UnauthorizedException, ConflictException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  UnauthorizedException,
+  ConflictException,
+  BadRequestException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcrypt';
@@ -57,9 +62,7 @@ export class AuthService {
         role,
         riderProfile: role === UserRole.RIDER ? { create: {} } : undefined,
         driverProfile:
-          role === UserRole.DRIVER || role === UserRole.COURIER
-            ? { create: {} }
-            : undefined,
+          role === UserRole.DRIVER || role === UserRole.COURIER ? { create: {} } : undefined,
       },
     });
 

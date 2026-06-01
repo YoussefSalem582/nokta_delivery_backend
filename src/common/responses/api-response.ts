@@ -8,11 +8,7 @@ export interface ApiResponse<T = unknown> {
   errors?: Record<string, string[]>;
 }
 
-export function buildResponse<T>(
-  messageKey: MessageKey,
-  data?: T,
-  success = true,
-): ApiResponse<T> {
+export function buildResponse<T>(messageKey: MessageKey, data?: T, success = true): ApiResponse<T> {
   return {
     success,
     messageKey,

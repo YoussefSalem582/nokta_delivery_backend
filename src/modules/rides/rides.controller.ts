@@ -1,19 +1,7 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Param,
-  Patch,
-  Post,
-  UseGuards,
-} from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { RidesService } from './rides.service';
-import {
-  EstimateFareDto,
-  RequestRideDto,
-  UpdateRideStatusDto,
-} from './dto/ride.dto';
+import { EstimateFareDto, RequestRideDto, UpdateRideStatusDto } from './dto/ride.dto';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { CurrentUser, AuthUserPayload } from '../../common/decorators/current-user.decorator';
 

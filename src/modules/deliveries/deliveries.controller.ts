@@ -1,11 +1,7 @@
 import { Body, Controller, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { DeliveriesService } from './deliveries.service';
-import {
-  AssignCourierDto,
-  CreateDeliveryDto,
-  UpdateDeliveryStatusDto,
-} from './dto/delivery.dto';
+import { AssignCourierDto, CreateDeliveryDto, UpdateDeliveryStatusDto } from './dto/delivery.dto';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { RolesGuard } from '../../common/guards/auth.guards';
 import { Roles } from '../../common/decorators/roles.decorator';

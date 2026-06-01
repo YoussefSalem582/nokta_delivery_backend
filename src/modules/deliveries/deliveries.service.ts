@@ -10,11 +10,7 @@ import { MessageKeys } from '../../common/messages/message-keys';
 import { buildErrorResponse } from '../../common/responses/api-response';
 import { toDeliveryStatus } from '../../common/mappers/status.mapper';
 import { NotificationKeys } from '../../common/messages/notification-keys';
-import {
-  AssignCourierDto,
-  CreateDeliveryDto,
-  UpdateDeliveryStatusDto,
-} from './dto/delivery.dto';
+import { AssignCourierDto, CreateDeliveryDto, UpdateDeliveryStatusDto } from './dto/delivery.dto';
 import { NotificationsService } from '../notifications/notifications.service';
 import { LocationService } from '../location/location.service';
 import { UpdateLocationDto } from '../rides/dto/ride.dto';

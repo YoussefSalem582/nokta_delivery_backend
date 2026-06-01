@@ -129,8 +129,8 @@ describe('AuthService', () => {
   it('rejects invalid credentials', async () => {
     mockPrisma.user.findUnique.mockResolvedValue(null);
 
-    await expect(
-      service.login({ email: 'wrong@example.com', password: 'bad' }),
-    ).rejects.toThrow(UnauthorizedException);
+    await expect(service.login({ email: 'wrong@example.com', password: 'bad' })).rejects.toThrow(
+      UnauthorizedException,
+    );
   });
 });
