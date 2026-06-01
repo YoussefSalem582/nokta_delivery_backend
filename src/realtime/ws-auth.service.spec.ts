@@ -10,6 +10,7 @@ describe('WsAuthService', () => {
   const prisma = {
     user: { findUnique: jest.fn() },
     ride: { findUnique: jest.fn() },
+    delivery: { findUnique: jest.fn() },
   };
 
   beforeEach(async () => {
@@ -51,5 +52,18 @@ describe('WsAuthService', () => {
     await expect(service.canJoinRide('r1', 'ride-1')).resolves.toBe(true);
     await expect(service.canJoinRide('d1', 'ride-1')).resolves.toBe(true);
     await expect(service.canJoinRide('other', 'ride-1')).resolves.toBe(false);
+  });
+
+  it('canPublishRideLocation allows only assigned driver', async () => {
+    prisma.ride.findUnique.mockResolvedValue({ driverId: 'd1' });
+    await expect(service.canPublishRideLocation('d1', 'ride-1')).resolves.toBe(true);
+    await expect(service.canPublishRideLocation('r1', 'ride-1')).resolves.toBe(false);
+  });
+
+  it('canJoinDelivery allows customer or courier', async () => {
+    prisma.delivery.findUnique.mockResolvedValue({ customerId: 'c1', courierId: 'u1' });
+    await expect(service.canJoinDelivery('c1', 'del-1')).resolves.toBe(true);
+    await expect(service.canJoinDelivery('u1', 'del-1')).resolves.toBe(true);
+    await expect(service.canJoinDelivery('other', 'del-1')).resolves.toBe(false);
   });
 });
