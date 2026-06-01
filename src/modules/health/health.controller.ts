@@ -2,11 +2,14 @@ import { Controller, Get } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { PrismaService } from '../../database/prisma.service';
 
+import { Public } from '../../common/decorators/roles.decorator';
+
 @ApiTags('health')
 @Controller('health')
 export class HealthController {
   constructor(private readonly prisma: PrismaService) {}
 
+  @Public()
   @Get()
   @ApiOperation({ summary: 'Health check' })
   check() {
@@ -17,6 +20,7 @@ export class HealthController {
     };
   }
 
+  @Public()
   @Get('ready')
   @ApiOperation({ summary: 'Readiness check including database' })
   async ready() {
