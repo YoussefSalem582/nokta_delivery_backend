@@ -10,6 +10,7 @@ import { ForbiddenException, Logger } from '@nestjs/common';
 import { Server, Socket } from 'socket.io';
 import { UserRole } from '@prisma/client';
 import { LocationService } from '../modules/location/location.service';
+import { UpdateLocationDto } from '../modules/rides/dto/ride.dto';
 import { WsAuthService, WsUserPayload } from './ws-auth.service';
 
 interface AuthenticatedSocket extends Socket {
@@ -60,6 +61,79 @@ export class LocationGateway implements OnGatewayConnection {
     return { joined: data.rideId };
   }
 
+  @SubscribeMessage('joinDelivery')
+  async handleJoinDelivery(
+    @MessageBody() data: { deliveryId: string },
+    @ConnectedSocket() client: AuthenticatedSocket,
+  ) {
+    const user = client.data.user;
+    if (!user) {
+      throw new ForbiddenException('Unauthorized');
+    }
+
+    const allowed = await this.wsAuth.canJoinDelivery(user.sub, data.deliveryId);
+    if (!allowed) {
+      throw new ForbiddenException('Not allowed to join this delivery room');
+    }
+
+    void client.join(`delivery:${data.deliveryId}`);
+    return { joined: data.deliveryId };
+  }
+
+  @SubscribeMessage('publishRideLocation')
+  async handlePublishRideLocation(
+    @MessageBody() data: { rideId: string; lat: number; lng: number; heading?: number; speed?: number },
+    @ConnectedSocket() client: AuthenticatedSocket,
+  ) {
+    const user = client.data.user;
+    if (!user) {
+      throw new ForbiddenException('Unauthorized');
+    }
+
+    const allowed = await this.wsAuth.canPublishRideLocation(user.sub, data.rideId);
+    if (!allowed) {
+      throw new ForbiddenException('Only the assigned driver may publish ride location');
+    }
+
+    const dto: UpdateLocationDto = {
+      lat: data.lat,
+      lng: data.lng,
+      heading: data.heading,
+      speed: data.speed,
+    };
+
+    const payload = await this.locationService.saveRideLocation(data.rideId, user.sub, dto);
+    this.broadcastRideLocation(data.rideId, JSON.parse(payload));
+
+    return { ok: true };
+  }
+
+  @SubscribeMessage('publishDeliveryLocation')
+  async handlePublishDeliveryLocation(
+    @MessageBody() data: { deliveryId: string; lat: number; lng: number; heading?: number },
+    @ConnectedSocket() client: AuthenticatedSocket,
+  ) {
+    const user = client.data.user;
+    if (!user) {
+      throw new ForbiddenException('Unauthorized');
+    }
+
+    const allowed = await this.wsAuth.canPublishDeliveryLocation(user.sub, data.deliveryId);
+    if (!allowed) {
+      throw new ForbiddenException('Only the assigned courier may publish delivery location');
+    }
+
+    const live = await this.locationService.saveDeliveryLocation(data.deliveryId, user.sub, {
+      lat: data.lat,
+      lng: data.lng,
+      heading: data.heading,
+    });
+
+    this.broadcastDeliveryLocation(data.deliveryId, live);
+
+    return { ok: true };
+  }
+
   @SubscribeMessage('driverLocation')
   async handleDriverLocation(
     @MessageBody() data: { userId: string; lat: number; lng: number; heading?: number },
@@ -86,5 +160,9 @@ export class LocationGateway implements OnGatewayConnection {
 
   broadcastRideLocation(rideId: string, payload: unknown) {
     this.server.to(`ride:${rideId}`).emit('rideLocation', payload);
+  }
+
+  broadcastDeliveryLocation(deliveryId: string, payload: unknown) {
+    this.server.to(`delivery:${deliveryId}`).emit('deliveryLocation', payload);
   }
 }

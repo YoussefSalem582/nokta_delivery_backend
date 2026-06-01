@@ -4,6 +4,7 @@ import { DeliveriesService } from './deliveries.service';
 import { PrismaService } from '../../database/prisma.service';
 import { NotificationsService } from '../notifications/notifications.service';
 import { LocationService } from '../location/location.service';
+import { LocationGateway } from '../../realtime/location.gateway';
 import { DeliveryStatus } from '@prisma/client';
 
 describe('DeliveriesService', () => {
@@ -28,6 +29,10 @@ describe('DeliveriesService', () => {
     getDeliveryLocationHistory: jest.fn(),
   };
 
+  const mockLocationGateway = {
+    broadcastDeliveryLocation: jest.fn(),
+  };
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -35,6 +40,7 @@ describe('DeliveriesService', () => {
         { provide: PrismaService, useValue: mockPrisma },
         { provide: NotificationsService, useValue: mockNotifications },
         { provide: LocationService, useValue: mockLocation },
+        { provide: LocationGateway, useValue: mockLocationGateway },
       ],
     }).compile();
 

@@ -59,4 +59,35 @@ export class WsAuthService {
 
     return ride.riderId === userId || ride.driverId === userId;
   }
+
+  async canPublishRideLocation(userId: string, rideId: string): Promise<boolean> {
+    const ride = await this.prisma.ride.findUnique({
+      where: { id: rideId },
+      select: { driverId: true },
+    });
+
+    return ride?.driverId === userId;
+  }
+
+  async canJoinDelivery(userId: string, deliveryId: string): Promise<boolean> {
+    const delivery = await this.prisma.delivery.findUnique({
+      where: { id: deliveryId },
+      select: { customerId: true, courierId: true },
+    });
+
+    if (!delivery) {
+      return false;
+    }
+
+    return delivery.customerId === userId || delivery.courierId === userId;
+  }
+
+  async canPublishDeliveryLocation(userId: string, deliveryId: string): Promise<boolean> {
+    const delivery = await this.prisma.delivery.findUnique({
+      where: { id: deliveryId },
+      select: { courierId: true },
+    });
+
+    return delivery?.courierId === userId;
+  }
 }
