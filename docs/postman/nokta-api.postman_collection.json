@@ -1,0 +1,424 @@
+{
+  "info": {
+    "_postman_id": "nokta-api-collection-v1",
+    "name": "Nokta Delivery API",
+    "description": "Postman collection for the Nokta ride-hailing and delivery backend.\n\n## Setup\n1. Import `nokta-api.local.postman_environment.json`\n2. Run **Auth → Login** (or Register) — tokens are saved automatically\n3. Use trip/driver/delivery requests with the saved `accessToken`\n\nOpenAPI spec: `docs/openapi/nokta-api.openapi.json`\nSwagger UI: `http://localhost:3000/api/docs`",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [{ "key": "token", "value": "{{accessToken}}", "type": "string" }]
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:3000/api" }
+  ],
+  "item": [
+    {
+      "name": "Health",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/health"
+          }
+        },
+        {
+          "name": "Readiness Check",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/health/ready"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "  const body = pm.response.json();",
+                  "  if (body.data?.accessToken) pm.environment.set('accessToken', body.data.accessToken);",
+                  "  if (body.data?.refreshToken) pm.environment.set('refreshToken', body.data.refreshToken);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Ahmed Hassan\",\n  \"email\": \"ahmed@example.com\",\n  \"phone\": \"+201012345678\",\n  \"password\": \"SecurePass123!\"\n}"
+            },
+            "url": "{{baseUrl}}/v1/auth/register"
+          }
+        },
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "  const body = pm.response.json();",
+                  "  if (body.data?.accessToken) pm.environment.set('accessToken', body.data.accessToken);",
+                  "  if (body.data?.refreshToken) pm.environment.set('refreshToken', body.data.refreshToken);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"rider@nokta.app\",\n  \"password\": \"RiderPass123!\"\n}"
+            },
+            "url": "{{baseUrl}}/v1/auth/login"
+          }
+        },
+        {
+          "name": "Refresh Token",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}"
+            },
+            "url": "{{baseUrl}}/v1/auth/refresh"
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}"
+            },
+            "url": "{{baseUrl}}/v1/auth/logout"
+          }
+        },
+        {
+          "name": "Forgot Password",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"rider@nokta.app\"\n}"
+            },
+            "url": "{{baseUrl}}/v1/auth/forgot-password"
+          }
+        },
+        {
+          "name": "Register Device Token",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"token\": \"fcm-device-token-here\",\n  \"platform\": \"android\"\n}"
+            },
+            "url": "{{baseUrl}}/v1/auth/device-token"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Profile",
+      "item": [
+        {
+          "name": "Get Profile",
+          "request": { "method": "GET", "header": [], "url": "{{baseUrl}}/profile" }
+        },
+        {
+          "name": "List Riders",
+          "request": { "method": "GET", "header": [], "url": "{{baseUrl}}/riders" }
+        }
+      ]
+    },
+    {
+      "name": "Trips",
+      "item": [
+        {
+          "name": "Estimate Fare",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"pickupLat\": 30.0444,\n  \"pickupLng\": 31.2357,\n  \"dropoffLat\": 30.0626,\n  \"dropoffLng\": 31.2497,\n  \"rideTierKey\": \"comfort\"\n}"
+            },
+            "url": "{{baseUrl}}/rides/estimate-fare"
+          }
+        },
+        {
+          "name": "Request Trip",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "  const body = pm.response.json();",
+                  "  if (body.id) pm.environment.set('tripId', body.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Idempotency-Key", "value": "{{idempotencyKey}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"pickupAddress\": \"Tahrir Square, Cairo\",\n  \"dropoffAddress\": \"Maadi, Cairo\",\n  \"pickupLat\": 30.0444,\n  \"pickupLng\": 31.2357,\n  \"dropoffLat\": 30.0626,\n  \"dropoffLng\": 31.2497,\n  \"paymentMethodKey\": \"wallet\",\n  \"rideTierKey\": \"comfort\"\n}"
+            },
+            "url": "{{baseUrl}}/trips/request"
+          }
+        },
+        {
+          "name": "List Trips",
+          "request": { "method": "GET", "header": [], "url": "{{baseUrl}}/trips" }
+        },
+        {
+          "name": "Get Active Trip",
+          "request": { "method": "GET", "header": [], "url": "{{baseUrl}}/trips/active" }
+        },
+        {
+          "name": "Get Trip By ID",
+          "request": { "method": "GET", "header": [], "url": "{{baseUrl}}/trips/{{tripId}}" }
+        },
+        {
+          "name": "Update Trip Status",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"status\": \"cancelled\"\n}" },
+            "url": "{{baseUrl}}/trips/{{tripId}}/status"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Driver",
+      "item": [
+        {
+          "name": "Register Driver",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phone\": \"+201098765432\",\n  \"vehicleType\": \"sedan\",\n  \"vehicleMakeModel\": \"Toyota Corolla\",\n  \"licensePlate\": \"ABC 1234\",\n  \"termsAccepted\": true\n}"
+            },
+            "url": "{{baseUrl}}/v1/driver/register"
+          }
+        },
+        {
+          "name": "Driver Profile",
+          "request": { "method": "GET", "header": [], "url": "{{baseUrl}}/v1/driver/profile" }
+        },
+        {
+          "name": "Set Availability Online",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"status\": \"online\"\n}" },
+            "url": "{{baseUrl}}/v1/driver/availability"
+          }
+        },
+        {
+          "name": "List Offers",
+          "request": { "method": "GET", "header": [], "url": "{{baseUrl}}/v1/driver/offers" }
+        },
+        {
+          "name": "Accept Offer",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": "{{baseUrl}}/v1/driver/offers/{{tripId}}/accept"
+          }
+        },
+        {
+          "name": "Update Trip Status (Driver)",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"status\": \"inProgress\"\n}" },
+            "url": "{{baseUrl}}/v1/driver/trips/{{tripId}}/status"
+          }
+        },
+        {
+          "name": "Update Trip Location",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"lat\": 30.05,\n  \"lng\": 31.24,\n  \"heading\": 90\n}"
+            },
+            "url": "{{baseUrl}}/v1/driver/trips/{{tripId}}/location"
+          }
+        },
+        {
+          "name": "List Drivers",
+          "request": { "method": "GET", "header": [], "url": "{{baseUrl}}/drivers" }
+        }
+      ]
+    },
+    {
+      "name": "Deliveries",
+      "item": [
+        {
+          "name": "Create Delivery",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "  const body = pm.response.json();",
+                  "  if (body.id) pm.environment.set('deliveryId', body.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Idempotency-Key", "value": "{{idempotencyKey}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"pickupAddress\": \"Restaurant, Zamalek\",\n  \"dropoffAddress\": \"Apartment, Heliopolis\",\n  \"pickupLat\": 30.0626,\n  \"pickupLng\": 31.2195,\n  \"dropoffLat\": 30.0875,\n  \"dropoffLng\": 31.3240,\n  \"packageNotes\": \"Handle with care\"\n}"
+            },
+            "url": "{{baseUrl}}/deliveries"
+          }
+        },
+        {
+          "name": "List Deliveries",
+          "request": { "method": "GET", "header": [], "url": "{{baseUrl}}/deliveries" }
+        },
+        {
+          "name": "Track Delivery",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/deliveries/{{deliveryId}}/tracking"
+          }
+        },
+        {
+          "name": "Update Courier Location",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"lat\": 30.07,\n  \"lng\": 31.25\n}" },
+            "url": "{{baseUrl}}/deliveries/{{deliveryId}}/location"
+          }
+        },
+        {
+          "name": "Update Delivery Status",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"status\": \"pickedUp\"\n}" },
+            "url": "{{baseUrl}}/deliveries/{{deliveryId}}/status"
+          }
+        },
+        {
+          "name": "List Orders (Flutter alias)",
+          "request": { "method": "GET", "header": [], "url": "{{baseUrl}}/orders" }
+        }
+      ]
+    },
+    {
+      "name": "Offline Sync",
+      "item": [
+        {
+          "name": "Sync Queued Actions",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"actions\": [\n    {\n      \"clientActionId\": \"offline-action-001\",\n      \"actionType\": \"ride.request\",\n      \"payload\": {\n        \"pickupAddress\": \"A\",\n        \"dropoffAddress\": \"B\",\n        \"pickupLat\": 30.04,\n        \"pickupLng\": 31.23,\n        \"dropoffLat\": 30.06,\n        \"dropoffLng\": 31.25\n      }\n    }\n  ]\n}"
+            },
+            "url": "{{baseUrl}}/v1/sync/actions"
+          }
+        },
+        {
+          "name": "Reconcile State",
+          "request": { "method": "GET", "header": [], "url": "{{baseUrl}}/v1/sync/reconcile" }
+        }
+      ]
+    },
+    {
+      "name": "Admin",
+      "item": [
+        {
+          "name": "List Users",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/v1/admin/users?role=RIDER", "host": ["{{baseUrl}}"], "path": ["v1", "admin", "users"], "query": [{ "key": "role", "value": "RIDER" }] }
+          }
+        },
+        {
+          "name": "Analytics Overview",
+          "request": { "method": "GET", "header": [], "url": "{{baseUrl}}/v1/admin/analytics/overview" }
+        },
+        {
+          "name": "Audit Logs",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/v1/admin/audit-logs?limit=25", "host": ["{{baseUrl}}"], "path": ["v1", "admin", "audit-logs"], "query": [{ "key": "limit", "value": "25" }] }
+          }
+        },
+        {
+          "name": "List All Rides",
+          "request": { "method": "GET", "header": [], "url": "{{baseUrl}}/v1/admin/rides" }
+        },
+        {
+          "name": "Deactivate User",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": "{{baseUrl}}/v1/admin/users/user-id-here/deactivate"
+          }
+        }
+      ]
+    }
+  ]
+}
