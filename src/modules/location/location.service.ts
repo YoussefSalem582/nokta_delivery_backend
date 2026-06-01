@@ -6,6 +6,7 @@ import { UpdateLocationDto } from '../rides/dto/ride.dto';
 
 const DRIVER_LOCATION_PREFIX = 'driver:location:';
 const RIDE_LOCATION_PREFIX = 'ride:location:';
+const DELIVERY_LOCATION_PREFIX = 'delivery:location:';
 
 @Injectable()
 export class LocationService {
@@ -65,5 +66,47 @@ export class LocationService {
   async getRideLocation(rideId: string) {
     const raw = await this.redis.get(`${RIDE_LOCATION_PREFIX}${rideId}`);
     return raw ? JSON.parse(raw) : null;
+  }
+
+  async saveDeliveryLocation(deliveryId: string, courierId: string, dto: UpdateLocationDto) {
+    await this.prisma.deliveryLocation.create({
+      data: {
+        deliveryId,
+        lat: dto.lat,
+        lng: dto.lng,
+        heading: dto.heading,
+      },
+    });
+
+    const payload = {
+      deliveryId,
+      courierId,
+      lat: dto.lat,
+      lng: dto.lng,
+      heading: dto.heading,
+      updatedAt: new Date().toISOString(),
+    };
+
+    await this.redis.set(
+      `${DELIVERY_LOCATION_PREFIX}${deliveryId}`,
+      JSON.stringify(payload),
+      'EX',
+      7200,
+    );
+
+    return payload;
+  }
+
+  async getDeliveryLocation(deliveryId: string) {
+    const raw = await this.redis.get(`${DELIVERY_LOCATION_PREFIX}${deliveryId}`);
+    return raw ? JSON.parse(raw) : null;
+  }
+
+  async getDeliveryLocationHistory(deliveryId: string, limit = 50) {
+    return this.prisma.deliveryLocation.findMany({
+      where: { deliveryId },
+      orderBy: { recordedAt: 'desc' },
+      take: limit,
+    });
   }
 }

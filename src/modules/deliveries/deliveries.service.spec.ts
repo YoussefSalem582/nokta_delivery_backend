@@ -3,6 +3,7 @@ import { NotFoundException } from '@nestjs/common';
 import { DeliveriesService } from './deliveries.service';
 import { PrismaService } from '../../database/prisma.service';
 import { NotificationsService } from '../notifications/notifications.service';
+import { LocationService } from '../location/location.service';
 import { DeliveryStatus } from '@prisma/client';
 
 describe('DeliveriesService', () => {
@@ -21,12 +22,19 @@ describe('DeliveriesService', () => {
     queueNotification: jest.fn(),
   };
 
+  const mockLocation = {
+    saveDeliveryLocation: jest.fn(),
+    getDeliveryLocation: jest.fn(),
+    getDeliveryLocationHistory: jest.fn(),
+  };
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         DeliveriesService,
         { provide: PrismaService, useValue: mockPrisma },
         { provide: NotificationsService, useValue: mockNotifications },
+        { provide: LocationService, useValue: mockLocation },
       ],
     }).compile();
 

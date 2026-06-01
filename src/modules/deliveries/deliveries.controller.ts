@@ -11,6 +11,7 @@ import { RolesGuard } from '../../common/guards/auth.guards';
 import { Roles } from '../../common/decorators/roles.decorator';
 import { CurrentUser, AuthUserPayload } from '../../common/decorators/current-user.decorator';
 import { UserRole } from '@prisma/client';
+import { UpdateLocationDto } from '../rides/dto/ride.dto';
 
 @ApiTags('deliveries')
 @ApiBearerAuth()
@@ -29,6 +30,22 @@ export class DeliveriesController {
   @ApiOperation({ summary: 'List deliveries for current user' })
   list(@CurrentUser() user: AuthUserPayload) {
     return this.deliveriesService.findAllForUser(user.sub);
+  }
+
+  @Get(':id/tracking')
+  @ApiOperation({ summary: 'Track delivery with live and historical locations' })
+  tracking(@Param('id') id: string, @CurrentUser() user: AuthUserPayload) {
+    return this.deliveriesService.getTracking(id, user.sub);
+  }
+
+  @Patch(':id/location')
+  @ApiOperation({ summary: 'Update courier location during delivery' })
+  updateLocation(
+    @Param('id') id: string,
+    @CurrentUser() user: AuthUserPayload,
+    @Body() dto: UpdateLocationDto,
+  ) {
+    return this.deliveriesService.updateLocation(id, user.sub, dto);
   }
 
   @Get(':id')

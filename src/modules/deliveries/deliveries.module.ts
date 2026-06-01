@@ -4,8 +4,10 @@ import { OrdersController } from './orders.controller';
 import { DeliveriesService } from './deliveries.service';
 import { NotificationsModule } from '../notifications/notifications.module';
 
+import { LocationModule } from '../location/location.module';
+
 @Module({
-  imports: [forwardRef(() => NotificationsModule)],
+  imports: [forwardRef(() => NotificationsModule), LocationModule],
   controllers: [DeliveriesController, OrdersController],
   providers: [DeliveriesService],
   exports: [DeliveriesService],

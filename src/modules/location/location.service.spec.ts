@@ -14,6 +14,7 @@ describe('LocationService', () => {
   const mockPrisma = {
     rideLocation: { create: jest.fn() },
     ride: { update: jest.fn() },
+    deliveryLocation: { create: jest.fn(), findMany: jest.fn() },
   };
 
   beforeEach(async () => {
@@ -50,6 +51,20 @@ describe('LocationService', () => {
     expect(mockPrisma.rideLocation.create).toHaveBeenCalled();
     expect(mockRedis.set).toHaveBeenCalledWith(
       'ride:location:ride-1',
+      expect.any(String),
+      'EX',
+      7200,
+    );
+  });
+
+  it('persists delivery location to postgres and redis', async () => {
+    mockPrisma.deliveryLocation.create.mockResolvedValue({});
+
+    await service.saveDeliveryLocation('delivery-1', 'courier-1', { lat: 30.01, lng: 31.2 });
+
+    expect(mockPrisma.deliveryLocation.create).toHaveBeenCalled();
+    expect(mockRedis.set).toHaveBeenCalledWith(
+      'delivery:location:delivery-1',
       expect.any(String),
       'EX',
       7200,

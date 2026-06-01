@@ -16,6 +16,8 @@ import {
   UpdateDeliveryStatusDto,
 } from './dto/delivery.dto';
 import { NotificationsService } from '../notifications/notifications.service';
+import { LocationService } from '../location/location.service';
+import { UpdateLocationDto } from '../rides/dto/ride.dto';
 
 const statusReverse: Record<string, DeliveryStatus> = {
   requested: DeliveryStatus.REQUESTED,
@@ -31,6 +33,7 @@ export class DeliveriesService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly notificationsService: NotificationsService,
+    private readonly locationService: LocationService,
   ) {}
 
   async create(userId: string, dto: CreateDeliveryDto) {
@@ -125,6 +128,39 @@ export class DeliveriesService {
     }
 
     return this.toJson(updated);
+  }
+
+  async updateLocation(id: string, userId: string, dto: UpdateLocationDto) {
+    const delivery = await this.getOrThrow(id);
+    if (delivery.courierId !== userId) {
+      throw new ForbiddenException(buildErrorResponse(MessageKeys.DELIVERY.NOT_FOUND));
+    }
+
+    const live = await this.locationService.saveDeliveryLocation(id, userId, dto);
+    return { deliveryId: id, live };
+  }
+
+  async getTracking(id: string, userId: string) {
+    const delivery = await this.getOrThrow(id);
+    if (delivery.customerId !== userId && delivery.courierId !== userId) {
+      throw new ForbiddenException(buildErrorResponse(MessageKeys.DELIVERY.NOT_FOUND));
+    }
+
+    const [live, history] = await Promise.all([
+      this.locationService.getDeliveryLocation(id),
+      this.locationService.getDeliveryLocationHistory(id),
+    ]);
+
+    return {
+      delivery: this.toJson(delivery),
+      live,
+      history: history.map((point) => ({
+        lat: Number(point.lat),
+        lng: Number(point.lng),
+        heading: point.heading != null ? Number(point.heading) : undefined,
+        recordedAt: point.recordedAt.toISOString(),
+      })),
+    };
   }
 
   private async getOrThrow(id: string) {
