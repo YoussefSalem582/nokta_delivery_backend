@@ -1,0 +1,319 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  RIDER
+  DRIVER
+  COURIER
+  ADMIN
+}
+
+enum RideStatus {
+  REQUESTED
+  ACCEPTED
+  DRIVER_ARRIVING
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum DeliveryStatus {
+  REQUESTED
+  ASSIGNED
+  PICKED_UP
+  IN_TRANSIT
+  DELIVERED
+  CANCELLED
+}
+
+enum DriverAvailability {
+  OFFLINE
+  ONLINE
+  ON_TRIP
+}
+
+enum NotificationStatus {
+  PENDING
+  SENT
+  FAILED
+}
+
+enum SyncRequestStatus {
+  PENDING
+  PROCESSED
+  FAILED
+}
+
+model User {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  passwordHash String   @map("password_hash")
+  name         String
+  phone        String
+  role         UserRole @default(RIDER)
+  avatarUrl    String?  @map("avatar_url")
+  walletBalance Decimal @default(0) @map("wallet_balance") @db.Decimal(10, 2)
+  isActive     Boolean  @default(true) @map("is_active")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  riderProfile   RiderProfile?
+  driverProfile  DriverProfile?
+  refreshTokens  RefreshToken[]
+  deviceTokens   DeviceToken[]
+  notifications  Notification[]
+  ridesAsRider   Ride[]           @relation("RideRider")
+  ridesAsDriver  Ride[]           @relation("RideDriver")
+  deliveriesAsCustomer Delivery[] @relation("DeliveryCustomer")
+  deliveriesAsCourier  Delivery[] @relation("DeliveryCourier")
+  syncRequests   SyncRequest[]
+  auditLogs      AuditLog[]
+
+  @@map("users")
+}
+
+model RiderProfile {
+  id        String   @id @default(uuid())
+  userId    String   @unique @map("user_id")
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("rider_profiles")
+}
+
+model DriverProfile {
+  id               String             @id @default(uuid())
+  userId           String             @unique @map("user_id")
+  user             User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  availability     DriverAvailability @default(OFFLINE)
+  rating           Decimal            @default(5.0) @db.Decimal(3, 2)
+  isRegistered     Boolean            @default(false) @map("is_registered")
+  termsAcceptedAt  DateTime?          @map("terms_accepted_at")
+  registeredAt     DateTime?          @map("registered_at")
+  createdAt        DateTime           @default(now()) @map("created_at")
+  updatedAt        DateTime           @updatedAt @map("updated_at")
+
+  vehicle VehicleProfile?
+
+  @@map("driver_profiles")
+}
+
+model VehicleProfile {
+  id              String        @id @default(uuid())
+  driverProfileId String        @unique @map("driver_profile_id")
+  driverProfile   DriverProfile @relation(fields: [driverProfileId], references: [id], onDelete: Cascade)
+  vehicleType     String        @map("vehicle_type")
+  makeModel       String        @map("make_model")
+  licensePlate    String        @map("license_plate")
+  color           String?
+  createdAt       DateTime      @default(now()) @map("created_at")
+  updatedAt       DateTime      @updatedAt @map("updated_at")
+
+  @@map("vehicle_profiles")
+}
+
+model Ride {
+  id               String     @id @default(uuid())
+  riderId          String     @map("rider_id")
+  rider            User       @relation("RideRider", fields: [riderId], references: [id])
+  driverId         String?    @map("driver_id")
+  driver           User?      @relation("RideDriver", fields: [driverId], references: [id])
+  pickupAddress    String     @map("pickup_address")
+  dropoffAddress   String     @map("dropoff_address")
+  pickupLat        Decimal    @map("pickup_lat") @db.Decimal(10, 7)
+  pickupLng        Decimal    @map("pickup_lng") @db.Decimal(10, 7)
+  dropoffLat       Decimal    @map("dropoff_lat") @db.Decimal(10, 7)
+  dropoffLng       Decimal    @map("dropoff_lng") @db.Decimal(10, 7)
+  status           RideStatus @default(REQUESTED)
+  fare             Decimal    @db.Decimal(10, 2)
+  distanceKm       Decimal?   @map("distance_km") @db.Decimal(8, 2)
+  etaMinutes       Int?       @map("eta_minutes")
+  paymentMethodKey String?    @map("payment_method_key")
+  rideTierKey      String?    @map("ride_tier_key")
+  driverLat        Decimal?   @map("driver_lat") @db.Decimal(10, 7)
+  driverLng        Decimal?   @map("driver_lng") @db.Decimal(10, 7)
+  idempotencyKey   String?    @unique @map("idempotency_key")
+  createdAt        DateTime   @default(now()) @map("created_at")
+  updatedAt        DateTime   @updatedAt @map("updated_at")
+
+  locations RideLocation[]
+  events    RideEvent[]
+
+  @@index([riderId])
+  @@index([driverId])
+  @@index([status])
+  @@map("rides")
+}
+
+model Delivery {
+  id               String         @id @default(uuid())
+  customerId       String         @map("customer_id")
+  customer         User           @relation("DeliveryCustomer", fields: [customerId], references: [id])
+  courierId        String?        @map("courier_id")
+  courier          User?          @relation("DeliveryCourier", fields: [courierId], references: [id])
+  pickupAddress    String         @map("pickup_address")
+  dropoffAddress   String         @map("dropoff_address")
+  pickupLat        Decimal        @map("pickup_lat") @db.Decimal(10, 7)
+  pickupLng        Decimal        @map("pickup_lng") @db.Decimal(10, 7)
+  dropoffLat       Decimal        @map("dropoff_lat") @db.Decimal(10, 7)
+  dropoffLng       Decimal        @map("dropoff_lng") @db.Decimal(10, 7)
+  status           DeliveryStatus @default(REQUESTED)
+  fee              Decimal        @db.Decimal(10, 2)
+  packageNotes     String?        @map("package_notes")
+  idempotencyKey   String?        @unique @map("idempotency_key")
+  createdAt        DateTime       @default(now()) @map("created_at")
+  updatedAt        DateTime       @updatedAt @map("updated_at")
+
+  locations DeliveryLocation[]
+  events    DeliveryEvent[]
+
+  @@index([customerId])
+  @@index([courierId])
+  @@index([status])
+  @@map("deliveries")
+}
+
+model RideLocation {
+  id        String   @id @default(uuid())
+  rideId    String   @map("ride_id")
+  ride      Ride     @relation(fields: [rideId], references: [id], onDelete: Cascade)
+  lat       Decimal  @db.Decimal(10, 7)
+  lng       Decimal  @db.Decimal(10, 7)
+  heading   Decimal? @db.Decimal(5, 2)
+  speed     Decimal? @db.Decimal(6, 2)
+  recordedAt DateTime @default(now()) @map("recorded_at")
+
+  @@index([rideId, recordedAt])
+  @@map("ride_locations")
+}
+
+model DeliveryLocation {
+  id         String   @id @default(uuid())
+  deliveryId String   @map("delivery_id")
+  delivery   Delivery @relation(fields: [deliveryId], references: [id], onDelete: Cascade)
+  lat        Decimal  @db.Decimal(10, 7)
+  lng        Decimal  @db.Decimal(10, 7)
+  heading    Decimal? @db.Decimal(5, 2)
+  recordedAt DateTime @default(now()) @map("recorded_at")
+
+  @@index([deliveryId, recordedAt])
+  @@map("delivery_locations")
+}
+
+model RideEvent {
+  id        String     @id @default(uuid())
+  rideId    String     @map("ride_id")
+  ride      Ride       @relation(fields: [rideId], references: [id], onDelete: Cascade)
+  status    RideStatus
+  metadata  Json?
+  createdAt DateTime   @default(now()) @map("created_at")
+
+  @@index([rideId, createdAt])
+  @@map("ride_events")
+}
+
+model DeliveryEvent {
+  id         String         @id @default(uuid())
+  deliveryId String         @map("delivery_id")
+  delivery   Delivery       @relation(fields: [deliveryId], references: [id], onDelete: Cascade)
+  status     DeliveryStatus
+  metadata   Json?
+  createdAt  DateTime       @default(now()) @map("created_at")
+
+  @@index([deliveryId, createdAt])
+  @@map("delivery_events")
+}
+
+model DeviceToken {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  token     String   @unique
+  platform  String
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@index([userId])
+  @@map("device_tokens")
+}
+
+model Notification {
+  id           String             @id @default(uuid())
+  userId       String             @map("user_id")
+  user         User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  titleKey     String             @map("title_key")
+  bodyKey      String             @map("body_key")
+  data         Json?
+  status       NotificationStatus @default(PENDING)
+  sentAt       DateTime?          @map("sent_at")
+  errorMessage String?            @map("error_message")
+  createdAt    DateTime           @default(now()) @map("created_at")
+
+  @@index([userId, status])
+  @@map("notifications")
+}
+
+model RefreshToken {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenHash String   @unique @map("token_hash")
+  expiresAt DateTime @map("expires_at")
+  revokedAt DateTime? @map("revoked_at")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([userId])
+  @@map("refresh_tokens")
+}
+
+model SyncRequest {
+  id             String            @id @default(uuid())
+  userId         String            @map("user_id")
+  user           User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  clientActionId String            @map("client_action_id")
+  actionType     String            @map("action_type")
+  payload        Json
+  status         SyncRequestStatus @default(PENDING)
+  response       Json?
+  processedAt    DateTime?         @map("processed_at")
+  createdAt      DateTime          @default(now()) @map("created_at")
+
+  @@unique([userId, clientActionId])
+  @@index([userId, status])
+  @@map("sync_requests")
+}
+
+model AuditLog {
+  id         String   @id @default(uuid())
+  userId     String?  @map("user_id")
+  user       User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  action     String
+  entityType String   @map("entity_type")
+  entityId   String?  @map("entity_id")
+  metadata   Json?
+  ipAddress  String?  @map("ip_address")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  @@index([entityType, entityId])
+  @@index([userId])
+  @@map("audit_logs")
+}
+
+model PasswordResetToken {
+  id        String   @id @default(uuid())
+  email     String
+  tokenHash String   @unique @map("token_hash")
+  expiresAt DateTime @map("expires_at")
+  usedAt    DateTime? @map("used_at")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([email])
+  @@map("password_reset_tokens")
+}
