@@ -18,6 +18,7 @@ import { LocationModule } from './modules/location/location.module';
 import { NotificationsModule } from './modules/notifications/notifications.module';
 import { SyncModule } from './modules/sync/sync.module';
 import { AdminModule } from './modules/admin/admin.module';
+import { AuditModule } from './modules/audit/audit.module';
 import { JobsModule } from './jobs/jobs.module';
 
 @Module({
@@ -39,6 +40,7 @@ import { JobsModule } from './jobs/jobs.module';
     LocationModule,
     NotificationsModule,
     SyncModule,
+    AuditModule,
     AdminModule,
   ],
   providers: [
