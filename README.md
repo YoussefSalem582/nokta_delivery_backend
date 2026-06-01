@@ -8,7 +8,7 @@ Production-ready API for **Nokta**, an Egypt-focused ride-hailing and delivery p
 - Ride-hailing APIs compatible with the Flutter app (`/trips`, `/v1/driver/*`)
 - Delivery management with courier assignment
 - Live location tracking (Redis + PostgreSQL + Socket.io)
-- Push notifications via Firebase Admin SDK
+- Push notifications via Firebase Admin SDK with BullMQ retry queue
 - Offline-first sync with idempotency keys
 - Bilingual API responses (English/Arabic message keys)
 - Admin analytics and moderation endpoints
@@ -125,6 +125,22 @@ src/
 ├── realtime/        # Socket.io gateways
 └── jobs/            # Background job processors
 ```
+
+## Offline-First & Idempotency
+
+Send an `Idempotency-Key` header on `POST`/`PATCH`/`PUT` requests to safely retry offline actions:
+
+```bash
+curl -X POST http://localhost:3000/api/trips/request \
+  -H "Authorization: Bearer <token>" \
+  -H "Idempotency-Key: client-action-uuid-001" \
+  -H "Content-Type: application/json" \
+  -d '{ ... }'
+```
+
+Duplicate requests return the cached response with `messageKey: sync.duplicate`.
+
+Batch offline actions via `POST /api/v1/sync/actions` and reconcile state with `GET /api/v1/sync/reconcile`.
 
 ## Testing
 
