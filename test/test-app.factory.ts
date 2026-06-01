@@ -92,6 +92,7 @@ export async function createTestApp(mockPrisma = createMockPrisma()) {
   const mockRedis = {
     get: jest.fn().mockResolvedValue(null),
     set: jest.fn().mockResolvedValue('OK'),
+    ping: jest.fn().mockResolvedValue('PONG'),
   };
 
   const moduleFixture: TestingModule = await Test.createTestingModule({

@@ -24,5 +24,6 @@ describe('Health (e2e)', () => {
 
     expect(response.body.status).toBe('ready');
     expect(response.body.database).toBe('connected');
+    expect(response.body.redis).toBe('connected');
   });
 });
