@@ -67,7 +67,7 @@ Trip and delivery resources return **Flutter-compatible** plain JSON (e.g. `stat
 | Method | Path | Description |
 |--------|------|-------------|
 | GET | `/health` | Liveness probe |
-| GET | `/health/ready` | Readiness incl. database |
+| GET | `/health/ready` | Readiness incl. database and Redis |
 
 ### Auth
 
@@ -114,6 +114,7 @@ Trip and delivery resources return **Flutter-compatible** plain JSON (e.g. `stat
 | PATCH | `/v1/driver/trips/:tripId/status` | Driver status updates |
 | PATCH | `/v1/driver/trips/:tripId/location` | Live location during trip |
 | GET | `/drivers` | List registered drivers |
+| GET | `/drivers/:driverId/reviews` | Driver rating summary (v1; empty review list) |
 
 ### Deliveries
 

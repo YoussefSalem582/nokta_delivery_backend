@@ -30,6 +30,11 @@
 - [02_architecture.md](02_architecture.md)
 - [01_folder_structure.md](01_folder_structure.md)
 
+### … deploy or connect Flutter
+
+- [DEPLOYMENT.md](DEPLOYMENT.md)
+- [FLUTTER_INTEGRATION.md](FLUTTER_INTEGRATION.md)
+
 ### … debug local dev
 
 - [TROUBLESHOOTING.md](TROUBLESHOOTING.md)

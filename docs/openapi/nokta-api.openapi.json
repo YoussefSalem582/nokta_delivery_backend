@@ -25,7 +25,7 @@
             "description": ""
           }
         },
-        "summary": "Readiness check including database",
+        "summary": "Readiness check including database and Redis",
         "tags": [
           "health"
         ]
@@ -429,6 +429,35 @@
           }
         ],
         "summary": "List available drivers",
+        "tags": [
+          "drivers"
+        ]
+      }
+    },
+    "/api/drivers/{driverId}/reviews": {
+      "get": {
+        "operationId": "DriversController_driverReviews",
+        "parameters": [
+          {
+            "name": "driverId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get driver reviews summary (v1 stub list)",
         "tags": [
           "drivers"
         ]
