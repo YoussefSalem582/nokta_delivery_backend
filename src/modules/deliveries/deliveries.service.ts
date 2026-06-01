@@ -13,6 +13,7 @@ import { NotificationKeys } from '../../common/messages/notification-keys';
 import { AssignCourierDto, CreateDeliveryDto, UpdateDeliveryStatusDto } from './dto/delivery.dto';
 import { NotificationsService } from '../notifications/notifications.service';
 import { LocationService } from '../location/location.service';
+import { LocationGateway } from '../../realtime/location.gateway';
 import { UpdateLocationDto } from '../rides/dto/ride.dto';
 
 const statusReverse: Record<string, DeliveryStatus> = {
@@ -30,6 +31,7 @@ export class DeliveriesService {
     private readonly prisma: PrismaService,
     private readonly notificationsService: NotificationsService,
     private readonly locationService: LocationService,
+    private readonly locationGateway: LocationGateway,
   ) {}
 
   async create(userId: string, dto: CreateDeliveryDto) {
@@ -133,6 +135,7 @@ export class DeliveriesService {
     }
 
     const live = await this.locationService.saveDeliveryLocation(id, userId, dto);
+    this.locationGateway.broadcastDeliveryLocation(id, live);
     return { deliveryId: id, live };
   }
 
