@@ -1,9 +1,4 @@
-import {
-  CallHandler,
-  ExecutionContext,
-  Injectable,
-  NestInterceptor,
-} from '@nestjs/common';
+import { CallHandler, ExecutionContext, Injectable, NestInterceptor } from '@nestjs/common';
 import { Observable, of, from } from 'rxjs';
 import { switchMap, tap } from 'rxjs/operators';
 import { Inject } from '@nestjs/common';
@@ -29,7 +24,8 @@ export class IdempotencyInterceptor implements NestInterceptor {
       return next.handle();
     }
 
-    const idempotencyKey = request.headers[IDEMPOTENCY_HEADER] ?? request.headers['Idempotency-Key'];
+    const idempotencyKey =
+      request.headers[IDEMPOTENCY_HEADER] ?? request.headers['Idempotency-Key'];
     if (!idempotencyKey) {
       return next.handle();
     }
@@ -48,13 +44,8 @@ export class IdempotencyInterceptor implements NestInterceptor {
         }
 
         return next.handle().pipe(
-          tap((body) => {
-            void this.redis.set(
-              cacheKey,
-              JSON.stringify({ body }),
-              'EX',
-              CACHE_TTL_SECONDS,
-            );
+          tap((body: unknown) => {
+            void this.redis.set(cacheKey, JSON.stringify({ body }), 'EX', CACHE_TTL_SECONDS);
           }),
         );
       }),

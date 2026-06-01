@@ -69,9 +69,7 @@ describe('NotificationsService', () => {
   });
 
   it('re-enqueues failed notifications for retry', async () => {
-    mockPrisma.notification.findMany.mockResolvedValue([
-      { id: 'notif-failed', userId: 'user-1' },
-    ]);
+    mockPrisma.notification.findMany.mockResolvedValue([{ id: 'notif-failed', userId: 'user-1' }]);
     mockPrisma.notification.update.mockResolvedValue({});
 
     const result = await service.retryFailed();

@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { SyncRequestStatus } from '@prisma/client';
+import { Prisma, SyncRequestStatus } from '@prisma/client';
 import { PrismaService } from '../../database/prisma.service';
 import { MessageKeys } from '../../common/messages/message-keys';
 import { buildResponse } from '../../common/responses/api-response';
@@ -68,7 +68,7 @@ export class SyncService {
         userId,
         clientActionId: action.clientActionId,
         actionType: action.actionType,
-        payload: action.payload as object,
+        payload: action.payload as Prisma.InputJsonValue,
       },
       update: {},
     });
@@ -79,7 +79,7 @@ export class SyncService {
         where: { id: record.id },
         data: {
           status: SyncRequestStatus.PROCESSED,
-          response: response as object,
+          response: response,
           processedAt: new Date(),
         },
       });

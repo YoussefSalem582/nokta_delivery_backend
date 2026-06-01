@@ -63,9 +63,9 @@ export class LocationService {
     return payload;
   }
 
-  async getRideLocation(rideId: string) {
+  async getRideLocation(rideId: string): Promise<Record<string, unknown> | null> {
     const raw = await this.redis.get(`${RIDE_LOCATION_PREFIX}${rideId}`);
-    return raw ? JSON.parse(raw) : null;
+    return raw ? (JSON.parse(raw) as Record<string, unknown>) : null;
   }
 
   async saveDeliveryLocation(deliveryId: string, courierId: string, dto: UpdateLocationDto) {
@@ -97,9 +97,9 @@ export class LocationService {
     return payload;
   }
 
-  async getDeliveryLocation(deliveryId: string) {
+  async getDeliveryLocation(deliveryId: string): Promise<Record<string, unknown> | null> {
     const raw = await this.redis.get(`${DELIVERY_LOCATION_PREFIX}${deliveryId}`);
-    return raw ? JSON.parse(raw) : null;
+    return raw ? (JSON.parse(raw) as Record<string, unknown>) : null;
   }
 
   async getDeliveryLocationHistory(deliveryId: string, limit = 50) {

@@ -8,11 +8,7 @@ import { RideStatus } from '@prisma/client';
 import { PrismaService } from '../../database/prisma.service';
 import { MessageKeys } from '../../common/messages/message-keys';
 import { buildErrorResponse, buildResponse } from '../../common/responses/api-response';
-import {
-  fromTripStatus,
-  toTripJson,
-  toTripStatus,
-} from '../../common/mappers/status.mapper';
+import { fromTripStatus, toTripJson } from '../../common/mappers/status.mapper';
 import { EstimateFareDto, RequestRideDto, UpdateRideStatusDto } from './dto/ride.dto';
 
 const BASE_FARE = 15;
@@ -194,10 +190,7 @@ export class RidesService {
     return ride;
   }
 
-  private assertRideAccess(
-    ride: { riderId: string; driverId: string | null },
-    userId: string,
-  ) {
+  private assertRideAccess(ride: { riderId: string; driverId: string | null }, userId: string) {
     if (ride.riderId !== userId && ride.driverId !== userId) {
       throw new ForbiddenException(buildErrorResponse(MessageKeys.RIDE.FORBIDDEN));
     }
