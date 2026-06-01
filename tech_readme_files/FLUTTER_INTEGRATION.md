@@ -62,8 +62,20 @@ IO.io('http://<host>:3000/realtime', <String, dynamic>{
 
 Events:
 
-- `joinRide` — body `{ "rideId": "<uuid>" }` (user must be rider or driver on that ride)
-- `driverLocation` — body `{ "userId": "<driverId>", "lat", "lng", "heading?" }` (authenticated driver only)
+| Event | Direction | Notes |
+|-------|-----------|--------|
+| `joinRide` | C→S | `{ "rideId": "<uuid>" }` — rider or assigned driver |
+| `joinDelivery` | C→S | `{ "deliveryId": "<uuid>" }` — customer or assigned courier |
+| `publishRideLocation` | C→S | `{ "rideId", "lat", "lng", "heading?", "speed?" }` — assigned driver during trip |
+| `publishDeliveryLocation` | C→S | `{ "deliveryId", "lat", "lng", "heading?" }` — assigned courier during delivery |
+| `driverLocation` | C→S | `{ "userId", "lat", "lng", "heading?" }` — idle driver GPS |
+| `rideLocation` | S→C | Live ride position for room `ride:{rideId}` |
+| `deliveryLocation` | S→C | Live courier position for room `delivery:{deliveryId}` |
+
+HTTP tracking fallbacks:
+
+- `GET /api/trips/:id/tracking` — `{ trip, live, history }`
+- `GET /api/deliveries/:id/tracking` — `{ delivery, live, history }`
 
 ## 6. Verification tools
 

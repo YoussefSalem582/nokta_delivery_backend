@@ -109,4 +109,12 @@ export class LocationService {
       take: limit,
     });
   }
+
+  async getRideLocationHistory(rideId: string, limit = 50) {
+    return this.prisma.rideLocation.findMany({
+      where: { rideId },
+      orderBy: { recordedAt: 'desc' },
+      take: limit,
+    });
+  }
 }

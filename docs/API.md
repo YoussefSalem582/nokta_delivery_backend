@@ -95,6 +95,7 @@ Trip and delivery resources return **Flutter-compatible** plain JSON (e.g. `stat
 | GET | `/trips` | Trip history for current user |
 | GET | `/trips/active` | Active trip if any |
 | GET | `/trips/:id` | Trip detail |
+| GET | `/trips/:id/tracking` | Live + historical driver locations |
 | POST | `/trips/request` | Request a new ride |
 | PATCH | `/trips/:id/status` | Update status (`cancelled`, etc.) |
 | POST | `/rides/estimate-fare` | Fare estimate (EGP) |
@@ -155,9 +156,13 @@ Connect to namespace `/realtime`:
 
 | Event | Direction | Payload |
 |-------|-----------|---------|
-| `joinRide` | Client → Server | `{ "rideId": "..." }` |
-| `driverLocation` | Client → Server | `{ "userId", "lat", "lng", "heading?" }` |
-| `rideLocation` | Server → Client | Live ride position broadcast |
+| `joinRide` | Client → Server | `{ "rideId": "<uuid>" }` — rider or assigned driver |
+| `joinDelivery` | Client → Server | `{ "deliveryId": "<uuid>" }` — customer or assigned courier |
+| `publishRideLocation` | Client → Server | `{ "rideId", "lat", "lng", "heading?", "speed?" }` — assigned driver |
+| `publishDeliveryLocation` | Client → Server | `{ "deliveryId", "lat", "lng", "heading?" }` — assigned courier |
+| `driverLocation` | Client → Server | `{ "userId", "lat", "lng", "heading?" }` — idle driver GPS |
+| `rideLocation` | Server → Client | `{ "rideId", "driverId", "lat", "lng", "heading?", "updatedAt" }` |
+| `deliveryLocation` | Server → Client | `{ "deliveryId", "courierId", "lat", "lng", "heading?", "updatedAt" }` |
 
 ## Postman quick start
 

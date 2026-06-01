@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { RideStatus } from '@prisma/client';
 import { PrismaService } from '../../database/prisma.service';
+import { LocationService } from '../location/location.service';
 import { MessageKeys } from '../../common/messages/message-keys';
 import { buildErrorResponse, buildResponse } from '../../common/responses/api-response';
 import { fromTripStatus, toTripJson } from '../../common/mappers/status.mapper';
@@ -16,7 +17,10 @@ const PER_KM_RATE = 8;
 
 @Injectable()
 export class RidesService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly locationService: LocationService,
+  ) {}
 
   private rideInclude = {
     rider: { select: { id: true, name: true, phone: true, avatarUrl: true } },
@@ -55,6 +59,28 @@ export class RidesService {
     const ride = await this.getRideOrThrow(id);
     this.assertRideAccess(ride, userId);
     return toTripJson(ride);
+  }
+
+  async getTracking(id: string, userId: string) {
+    const ride = await this.getRideOrThrow(id);
+    this.assertRideAccess(ride, userId);
+
+    const [live, history] = await Promise.all([
+      this.locationService.getRideLocation(id),
+      this.locationService.getRideLocationHistory(id),
+    ]);
+
+    return {
+      trip: toTripJson(ride),
+      live,
+      history: history.map((point) => ({
+        lat: Number(point.lat),
+        lng: Number(point.lng),
+        heading: point.heading != null ? Number(point.heading) : undefined,
+        speed: point.speed != null ? Number(point.speed) : undefined,
+        recordedAt: point.recordedAt.toISOString(),
+      })),
+    };
   }
 
   async requestRide(userId: string, dto: RequestRideDto) {

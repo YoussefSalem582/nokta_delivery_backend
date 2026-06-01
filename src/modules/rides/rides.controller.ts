@@ -30,6 +30,12 @@ export class RidesController {
     return this.ridesService.findById(id, user.sub);
   }
 
+  @Get('trips/:id/tracking')
+  @ApiOperation({ summary: 'Track trip with live and historical driver locations' })
+  getTripTracking(@Param('id') id: string, @CurrentUser() user: AuthUserPayload) {
+    return this.ridesService.getTracking(id, user.sub);
+  }
+
   @Post('trips/request')
   @ApiOperation({ summary: 'Request a new trip' })
   requestTrip(@CurrentUser() user: AuthUserPayload, @Body() dto: RequestRideDto) {
