@@ -1,5 +1,6 @@
 import { Body, Controller, Post, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { Throttle } from '@nestjs/throttler';
 import { AuthService } from './auth.service';
 import {
   ForgotPasswordDto,
@@ -19,6 +20,7 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Public()
+  @Throttle({ default: { limit: 10, ttl: 60_000 } })
   @Post('register')
   @ApiOperation({ summary: 'Register a new user' })
   register(@Body() dto: RegisterDto) {
@@ -26,6 +28,7 @@ export class AuthController {
   }
 
   @Public()
+  @Throttle({ default: { limit: 10, ttl: 60_000 } })
   @Post('login')
   @ApiOperation({ summary: 'Login with email and password' })
   login(@Body() dto: LoginDto) {
@@ -33,6 +36,7 @@ export class AuthController {
   }
 
   @Public()
+  @Throttle({ default: { limit: 20, ttl: 60_000 } })
   @Post('refresh')
   @ApiOperation({ summary: 'Refresh access token' })
   refresh(@Body() dto: RefreshTokenDto) {
@@ -43,14 +47,12 @@ export class AuthController {
   @ApiBearerAuth()
   @Post('logout')
   @ApiOperation({ summary: 'Logout and revoke refresh tokens' })
-  logout(
-    @CurrentUser() user: AuthUserPayload,
-    @Body() body: { refreshToken?: string },
-  ) {
+  logout(@CurrentUser() user: AuthUserPayload, @Body() body: { refreshToken?: string }) {
     return this.authService.logout(user.sub, body.refreshToken);
   }
 
   @Public()
+  @Throttle({ default: { limit: 5, ttl: 60_000 } })
   @Post('forgot-password')
   @ApiOperation({ summary: 'Request password reset' })
   forgotPassword(@Body() dto: ForgotPasswordDto) {
@@ -58,6 +60,7 @@ export class AuthController {
   }
 
   @Public()
+  @Throttle({ default: { limit: 5, ttl: 60_000 } })
   @Post('reset-password')
   @ApiOperation({ summary: 'Reset password with token' })
   resetPassword(@Body() dto: ResetPasswordDto) {

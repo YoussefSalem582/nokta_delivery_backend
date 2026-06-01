@@ -35,6 +35,7 @@ export const MessageKeys = {
     AVAILABILITY_UPDATED: 'driver.availability.updated',
     OFFER_ACCEPTED: 'driver.offer.accepted',
     OFFER_DECLINED: 'driver.offer.declined',
+    NOT_FOUND: 'driver.not_found',
   },
   SYNC: {
     PROCESSED: 'sync.processed',
@@ -46,6 +47,7 @@ export const MessageKeys = {
     NOT_FOUND: 'common.not_found',
     INTERNAL_ERROR: 'common.internal_error',
     SUCCESS: 'common.success',
+    RATE_LIMIT: 'common.rate_limit',
   },
 } as const;
 
@@ -56,7 +58,10 @@ export const MessageTranslations: Record<string, { en: string; ar: string }> = {
   'auth.register.success': { en: 'Registration successful', ar: 'تم التسجيل بنجاح' },
   'auth.logout.success': { en: 'Logged out successfully', ar: 'تم تسجيل الخروج بنجاح' },
   'auth.refresh.success': { en: 'Token refreshed', ar: 'تم تحديث الرمز' },
-  'auth.invalid_credentials': { en: 'Invalid email or password', ar: 'البريد أو كلمة المرور غير صحيحة' },
+  'auth.invalid_credentials': {
+    en: 'Invalid email or password',
+    ar: 'البريد أو كلمة المرور غير صحيحة',
+  },
   'auth.email_exists': { en: 'Email already registered', ar: 'البريد مسجل مسبقاً' },
   'auth.unauthorized': { en: 'Unauthorized', ar: 'غير مصرح' },
   'auth.forgot_password.sent': {
@@ -87,6 +92,7 @@ export const MessageTranslations: Record<string, { en: string; ar: string }> = {
   'driver.availability.updated': { en: 'Availability updated', ar: 'تم تحديث الحالة' },
   'driver.offer.accepted': { en: 'Offer accepted', ar: 'تم قبول العرض' },
   'driver.offer.declined': { en: 'Offer declined', ar: 'تم رفض العرض' },
+  'driver.not_found': { en: 'Driver not found', ar: 'السائق غير موجود' },
   'sync.processed': { en: 'Sync action processed', ar: 'تمت معالجة الإجراء' },
   'sync.duplicate': { en: 'Duplicate sync action', ar: 'إجراء مكرر' },
   'sync.failed': { en: 'Sync action failed', ar: 'فشل الإجراء' },
@@ -94,4 +100,8 @@ export const MessageTranslations: Record<string, { en: string; ar: string }> = {
   'common.not_found': { en: 'Resource not found', ar: 'المورد غير موجود' },
   'common.internal_error': { en: 'Internal server error', ar: 'خطأ داخلي في الخادم' },
   'common.success': { en: 'Success', ar: 'نجاح' },
+  'common.rate_limit': {
+    en: 'Too many requests. Please try again later.',
+    ar: 'طلبات كثيرة جداً. يرجى المحاولة لاحقاً.',
+  },
 };

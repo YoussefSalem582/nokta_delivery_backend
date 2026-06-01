@@ -7,6 +7,7 @@ import {
   Logger,
 } from '@nestjs/common';
 import { Response } from 'express';
+import { ThrottlerException } from '@nestjs/throttler';
 import { MessageKeys } from '../messages/message-keys';
 import { buildErrorResponse } from '../responses/api-response';
 
@@ -17,6 +18,13 @@ export class GlobalExceptionFilter implements ExceptionFilter {
   catch(exception: unknown, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
+
+    if (exception instanceof ThrottlerException) {
+      response
+        .status(HttpStatus.TOO_MANY_REQUESTS)
+        .json(buildErrorResponse(MessageKeys.COMMON.RATE_LIMIT));
+      return;
+    }
 
     if (exception instanceof HttpException) {
       const status = exception.getStatus();
@@ -30,19 +38,18 @@ export class GlobalExceptionFilter implements ExceptionFilter {
         }
       }
 
-      response.status(status).json(
-        buildErrorResponse(
-          status === HttpStatus.UNAUTHORIZED
-            ? MessageKeys.AUTH.UNAUTHORIZED
-            : MessageKeys.COMMON.VALIDATION_ERROR,
-        ),
-      );
+      const messageKey =
+        status === Number(HttpStatus.UNAUTHORIZED)
+          ? MessageKeys.AUTH.UNAUTHORIZED
+          : MessageKeys.COMMON.VALIDATION_ERROR;
+
+      response.status(status).json(buildErrorResponse(messageKey));
       return;
     }
 
     this.logger.error(exception);
-    response.status(HttpStatus.INTERNAL_SERVER_ERROR).json(
-      buildErrorResponse(MessageKeys.COMMON.INTERNAL_ERROR),
-    );
+    response
+      .status(HttpStatus.INTERNAL_SERVER_ERROR)
+      .json(buildErrorResponse(MessageKeys.COMMON.INTERNAL_ERROR));
   }
 }
