@@ -1,10 +1,6 @@
 import { Body, Controller, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
-import {
-  DriverRegisterDto,
-  DriversService,
-  UpdateAvailabilityDto,
-} from './drivers.service';
+import { DriverRegisterDto, DriversService, UpdateAvailabilityDto } from './drivers.service';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { CurrentUser, AuthUserPayload } from '../../common/decorators/current-user.decorator';
 import { UpdateLocationDto, UpdateRideStatusDto } from '../rides/dto/ride.dto';
@@ -20,6 +16,12 @@ export class DriversController {
   @ApiOperation({ summary: 'List available drivers' })
   listDrivers() {
     return this.driversService.listDrivers();
+  }
+
+  @Get('drivers/:driverId/reviews')
+  @ApiOperation({ summary: 'Get driver reviews summary (v1 stub list)' })
+  driverReviews(@Param('driverId') driverId: string) {
+    return this.driversService.getDriverReviews(driverId);
   }
 
   @Post('v1/driver/register')

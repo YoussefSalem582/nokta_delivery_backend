@@ -18,9 +18,7 @@ import { UpdateLocationDto, UpdateRideStatusDto } from '../rides/dto/ride.dto';
 import { LocationService } from '../location/location.service';
 import { LocationGateway } from '../../realtime/location.gateway';
 import { NotificationsService } from '../notifications/notifications.service';
-import {
-  getRideStatusNotification,
-} from '../../common/messages/notification-keys';
+import { getRideStatusNotification } from '../../common/messages/notification-keys';
 import { IsBoolean, IsNotEmpty, IsString } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
@@ -205,7 +203,7 @@ export class DriversService {
     return toTripJson(updated);
   }
 
-  async declineOffer(_userId: string, tripId: string) {
+  declineOffer(_userId: string, tripId: string) {
     return { id: tripId, declined: true };
   }
 
@@ -258,6 +256,28 @@ export class DriversService {
     return toTripJson(updated!);
   }
 
+  async getDriverReviews(driverId: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: driverId },
+      include: { driverProfile: true },
+    });
+
+    if (!user || user.role !== UserRole.DRIVER || !user.driverProfile?.isRegistered) {
+      throw new NotFoundException(buildErrorResponse(MessageKeys.DRIVER.NOT_FOUND));
+    }
+
+    return {
+      averageRating: Number(user.driverProfile.rating),
+      reviewCount: 0,
+      reviews: [] as Array<{
+        id: string;
+        rating: number;
+        comment: string;
+        createdAt: string;
+      }>,
+    };
+  }
+
   async listDrivers() {
     const drivers = await this.prisma.user.findMany({
       where: { role: UserRole.DRIVER, driverProfile: { isRegistered: true } },
@@ -297,25 +317,23 @@ export class DriversService {
     });
   }
 
-  private toProfileResponse(
-    user: {
-      id: string;
-      name: string;
-      email: string;
-      phone: string;
-      walletBalance: unknown;
-      avatarUrl: string | null;
-      driverProfile?: {
-        isRegistered: boolean;
-        registeredAt: Date | null;
-        vehicle?: {
-          vehicleType: string;
-          makeModel: string;
-          licensePlate: string;
-        } | null;
+  private toProfileResponse(user: {
+    id: string;
+    name: string;
+    email: string;
+    phone: string;
+    walletBalance: unknown;
+    avatarUrl: string | null;
+    driverProfile?: {
+      isRegistered: boolean;
+      registeredAt: Date | null;
+      vehicle?: {
+        vehicleType: string;
+        makeModel: string;
+        licensePlate: string;
       } | null;
-    },
-  ) {
+    } | null;
+  }) {
     const dp = user.driverProfile;
     return {
       id: user.id,
