@@ -1,0 +1,48 @@
+name: ci
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  build-and-test:
+    name: lint, build, test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Build
+        run: npm run build
+
+      - name: Unit tests
+        run: npm test
+        env:
+          NODE_ENV: test
+          DATABASE_URL: postgresql://nokta:nokta_secret@localhost:5432/nokta_test?schema=public
+          JWT_ACCESS_SECRET: ci-access-secret-minimum-32-characters
+          JWT_REFRESH_SECRET: ci-refresh-secret-minimum-32-characters
+          REDIS_HOST: localhost
+          REDIS_PORT: '6379'
+
+      - name: E2E tests
+        run: npm run test:e2e
+        env:
+          NODE_ENV: test
+          DATABASE_URL: postgresql://nokta:nokta_secret@localhost:5432/nokta_test?schema=public
+          JWT_ACCESS_SECRET: ci-access-secret-minimum-32-characters
+          JWT_REFRESH_SECRET: ci-refresh-secret-minimum-32-characters
+          REDIS_HOST: localhost
+          REDIS_PORT: '6379'
